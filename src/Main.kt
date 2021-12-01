@@ -14,11 +14,7 @@ fun main () {
                     println("Quitting...")
                     break
                 }
-                1 -> {
-                    println("Running day 1...")
-                    var currentDay = Day1()
-                    currentDay.solveAll()
-                }
+                1 -> Day1().solveAll()
                 else -> println("Error: Day not found!")
             }
         } catch (ex: Exception) {
