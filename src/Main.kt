@@ -1,6 +1,6 @@
 import days.*
 import java.lang.Exception
-import java.util.Scanner
+import java.util.*
 
 fun main () {
     while (true) {
@@ -39,10 +39,13 @@ fun main () {
                 22 -> Day22().solveAll()
                 23 -> Day23().solveAll()
                 24 -> Day24().solveAll()
-                else -> println("Error: Day not found!")
+                else -> println("Error: Day not found")
             }
-        } catch (ex: Exception) {
-            println("Error: Invalid input!")
+        } catch (ex: InputMismatchException) {
+            println("Error: Invalid input")
+        }
+        catch (ex: Exception) {
+            println("Error: $ex")
         }
     }
 }
