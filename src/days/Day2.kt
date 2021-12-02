@@ -12,7 +12,7 @@ class Day2 {
     private fun solvePart1(): Int {
         var horizontalDelta = 0
         var verticalDelta = 0
-        val input = readFile("Day2")
+        val input = readFile("Day02")
         for (i in input.indices) {
             val inputSplit = input[i].split(' ')
             val command = inputSplit[0]
@@ -30,7 +30,7 @@ class Day2 {
         var horizontalDelta = 0
         var verticalDelta = 0
         var aim = 0
-        val input = readFile("Day2")
+        val input = readFile("Day02")
         for (i in input.indices) {
             val inputSplit = input[i].split(' ')
             val command = inputSplit[0]
