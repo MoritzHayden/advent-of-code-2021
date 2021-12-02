@@ -2,7 +2,7 @@ package days
 
 import readFile
 
-class Day1 {
+class Day01 {
     fun solveAll() {
         println("Solving day 1...")
         println("Part 1: ${solvePart1()}")

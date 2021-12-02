@@ -1,6 +1,6 @@
 package days
 
-class Day4 {
+class Day04 {
     fun solveAll() {
         println("Solving day 4...")
         println("Part 1: ${solvePart1()}")
