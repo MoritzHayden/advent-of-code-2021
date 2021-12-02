@@ -27,6 +27,23 @@ class Day2 {
     }
 
     private fun solvePart2(): Int {
-        return 0
+        var horizontalDelta = 0
+        var verticalDelta = 0
+        var aim = 0
+        val input = readFile("Day2")
+        for (i in input.indices) {
+            val inputSplit = input[i].split(' ')
+            val command = inputSplit[0]
+            val amount = inputSplit[1].toInt()
+            when (command) {
+                "forward" -> {
+                    horizontalDelta += amount
+                    verticalDelta += (aim * amount)
+                }
+                "down" -> aim += amount
+                "up" -> aim -= amount
+            }
+        }
+        return horizontalDelta * verticalDelta
     }
 }
