@@ -1,6 +1,7 @@
 package days
 
 import readFile
+import toInt
 
 class Day03 {
     fun solveAll() {
@@ -36,72 +37,61 @@ class Day03 {
             }
         }
 
-        powerConsumption = Integer.parseInt(gammaRate, 2) * Integer.parseInt(epsilonRate, 2)
+        powerConsumption = gammaRate.toInt() * epsilonRate.toInt()
         return powerConsumption
     }
 
     private fun solvePart2(): Int {
         val lifeSupportRating: Int
-        val counter = arrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-        var oxygenRegex = ""
-        var cO2Regex = ""
         var oxygenRating = ""
         var cO2Rating = ""
-        var oxygenFound = false
-        var cO2Found = false
-        val input = readFile("Day03")
+        var searchChar: Char
+        val oxygenInput = readFile("Day03").toMutableList()
+        val cO2Input = readFile("Day03").toMutableList()
 
-        for (i in input.indices) {
-            for (j in 0 until input[i].length) {
-                if (input[i][j] == '1') {
-                    counter[j]++
+        // Oxygen Rating
+        for (i in 0 until 12) {
+            var currentCount = 0
+            for (j in oxygenInput.indices) {
+                if (oxygenInput[j][i] == '1') {
+                    currentCount++
                 } else {
-                    counter[j]--
+                    currentCount--
                 }
             }
-        }
 
-        for (i in counter) {
-            if (i >= 0) {
-                oxygenRegex += "1"
-                cO2Regex += "0"
-            } else {
-                oxygenRegex += "0"
-                cO2Regex += "1"
-            }
-        }
+            searchChar = if (currentCount >= 0) '1' else '0'
 
-        for (i in counter.indices.reversed()) {
-            for (line in input) {
-                if (!oxygenFound && line.matches(oxygenRegex.toRegex())) {
-                    oxygenRating = line
-                    oxygenFound = true
-                }
-                if (!cO2Found && line.matches(cO2Regex.toRegex())) {
-                    cO2Rating = line
-                    cO2Found = true
-                }
-                if (oxygenFound && cO2Found) {
-                    break
-                }
-            }
-            if (oxygenFound && cO2Found) {
+            oxygenInput.removeIf{ it[i] != searchChar }
+
+            if (oxygenInput.size == 1) {
+                oxygenRating = oxygenInput[0]
                 break
-            } else {
-                if (!oxygenFound) {
-                    oxygenRegex = oxygenRegex.substring(0, i) + '.' + oxygenRegex.substring(i + 1)
-                }
-                if (!cO2Found) {
-                    cO2Regex = cO2Regex.substring(0, i) + '.' + cO2Regex.substring(i + 1)
-                }
             }
         }
 
-        println(oxygenRating + " -> " + Integer.parseInt(oxygenRating, 2))
-        println(cO2Rating + " -> " + Integer.parseInt(cO2Rating, 2))
+        // CO2 Rating
+        for (i in 0 until 12) {
+            var currentCount = 0
+            for (j in cO2Input.indices) {
+                if (cO2Input[j][i] == '1') {
+                    currentCount++
+                } else {
+                    currentCount--
+                }
+            }
 
-        // Not the following: 866578
-        lifeSupportRating = Integer.parseInt(oxygenRating, 2) * Integer.parseInt(cO2Rating, 2)
+            searchChar = if (currentCount >= 0) '1' else '0'
+
+            cO2Input.removeIf{ it[i] == searchChar }
+
+            if (cO2Input.size == 1) {
+                cO2Rating = cO2Input[0]
+                break
+            }
+        }
+
+        lifeSupportRating = oxygenRating.toInt() * cO2Rating.toInt()
         return lifeSupportRating
     }
 }
