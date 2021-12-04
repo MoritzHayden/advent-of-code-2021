@@ -42,18 +42,21 @@ class Day03 {
     }
 
     private fun solvePart2(): Int {
-        val lifeSupportRating: Int
-        var oxygenRating = ""
-        var cO2Rating = ""
-        var searchChar: Char
         val oxygenInput = readFile("Day03").toMutableList()
         val cO2Input = readFile("Day03").toMutableList()
+        var oxygenRating = getRating(oxygenInput, "oxygen")
+        var cO2Rating = getRating(cO2Input, "co2")
+        return oxygenRating * cO2Rating
+    }
 
-        // Oxygen Rating
+    private fun getRating(input: MutableList<String>, type: String): Int {
+        var rating = ""
+        var searchChar: Char
+
         for (i in 0 until 12) {
             var currentCount = 0
-            for (j in oxygenInput.indices) {
-                if (oxygenInput[j][i] == '1') {
+            for (j in input.indices) {
+                if (input[j][i] == '1') {
                     currentCount++
                 } else {
                     currentCount--
@@ -62,36 +65,17 @@ class Day03 {
 
             searchChar = if (currentCount >= 0) '1' else '0'
 
-            oxygenInput.removeIf{ it[i] != searchChar }
+            when(type) {
+                "oxygen" -> input.removeIf{ it[i] != searchChar }
+                "co2" -> input.removeIf{ it[i] == searchChar }
+            }
 
-            if (oxygenInput.size == 1) {
-                oxygenRating = oxygenInput[0]
+            if (input.size == 1) {
+                rating = input[0]
                 break
             }
         }
 
-        // CO2 Rating
-        for (i in 0 until 12) {
-            var currentCount = 0
-            for (j in cO2Input.indices) {
-                if (cO2Input[j][i] == '1') {
-                    currentCount++
-                } else {
-                    currentCount--
-                }
-            }
-
-            searchChar = if (currentCount >= 0) '1' else '0'
-
-            cO2Input.removeIf{ it[i] == searchChar }
-
-            if (cO2Input.size == 1) {
-                cO2Rating = cO2Input[0]
-                break
-            }
-        }
-
-        lifeSupportRating = oxygenRating.toInt() * cO2Rating.toInt()
-        return lifeSupportRating
+        return rating.toInt()
     }
 }
