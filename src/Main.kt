@@ -39,6 +39,7 @@ fun main () {
                 22 -> Day22().solveAll()
                 23 -> Day23().solveAll()
                 24 -> Day24().solveAll()
+                25 -> Day25().solveAll()
                 else -> println("Error: Day not found")
             }
         } catch (ex: InputMismatchException) {
