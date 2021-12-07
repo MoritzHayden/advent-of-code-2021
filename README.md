@@ -24,9 +24,15 @@ The `src/Utils.kt` file contains some helpful methods from [JetBrains](https://w
         }
     }
     ```
+- The `String.toInt()` function is an extension method on the String class that transforms a string representation of a binary number into its integer representation. For example:
+    ```
+    if ("01001101".toInt() == 77) {
+        // This is true
+    }
+    ```
 - The `String.md5()` function is an extension method on the String class that transforms a string into a md5 hash. For example:
-  ```
-  if ("This is a test string".md5() == "c639efc1e98762233743a75e7798dd9c") {
-          // This is true
-  }
-  ```
+    ```
+    if ("This is a test string".md5() == "c639efc1e98762233743a75e7798dd9c") {
+        // This is true
+    }
+    ```
