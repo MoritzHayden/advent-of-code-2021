@@ -17,11 +17,42 @@ class Day08 {
 
     private fun solvePart2(): Int {
         val input = readFile("Day08")
-        val inputSignals = input.first().split(" | ").first().split(" ")
-        val signalMapping = mapSignals(inputSignals)
-        println(signalMapping)
 
-        return 0
+        var sortedVals: MutableList<String> = mutableListOf()
+        var tempNumberList: MutableList<String> = mutableListOf()
+        var signalMappingList: MutableList<MutableList<String>> = mutableListOf()
+
+        val iterator = input.iterator()
+        while(iterator.hasNext()){
+            val item = iterator.next()
+            signalMappingList.add(mapSignals(item.split(" | ").first().split(" ")))
+        }
+
+        for (i in input) {
+            signalMappingList.add(mapSignals(i.split(" | ").first().split(" ")))
+        }
+
+        var counter = 0
+        for (i in input.indices) {
+            input[i].split(" | ").last().split(" ").forEach {
+                sortedVals.add(sortString(it))
+            }
+            for (j in sortedVals) {
+                tempNumberList.add(signalMappingList[i].indexOf(j).toString())
+            }
+
+            counter += concatenateToInt(tempNumberList)
+
+            println("mapping: ${signalMappingList[i]}")
+            println("sortedVals: $sortedVals")
+            println("tempNumberList: $tempNumberList -> ${concatenateToInt(tempNumberList)}")
+            println("counter: $counter")
+
+            tempNumberList.clear()
+            sortedVals.clear()
+        }
+
+        return counter
     }
 
     private fun countUniqueOutputs(input: List<String>): Int {
@@ -36,52 +67,67 @@ class Day08 {
         return outputValues.count { it.length == 2 || it.length == 3 || it.length == 4 || it.length == 7 }
     }
 
-    private fun mapSignals(inputSignals: List<String>): MutableMap<String, String> {
-        val outputValues: MutableMap<String, String> = mutableMapOf()
-        // Format: first value is very top then clockwise. Middle bar is last.
-        var trackedValues = mutableListOf<Char>(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ')
+    private fun mapSignals(inputSignals: List<String>): MutableList<String> {
+        val knownValues = mutableListOf("", "", "", "", "", "", "", "", "", "")
 
-        // Map the known values
-        inputSignals.forEach { inputSignal ->
-            if (inputSignal.length == 2) {
-                outputValues.put(sortString(inputSignal), "1")
-            } else if (inputSignal.length == 3) {
-                outputValues.put(sortString(inputSignal), "7")
-            } else if (inputSignal.length == 4) {
-                outputValues.put(sortString(inputSignal), "4")
-            } else if (inputSignal.length == 7) {
-                outputValues.put(sortString(inputSignal), "8")
-            }
-        }
-
-        // Find indices of known values
-        var oneIndex = 0
-        var fourIndex = 0
-        var sevenIndex = 0
-        var eightIndex = 0
+        val lengthFiveInputs: MutableList<String> = mutableListOf() // 2, 3, or 5
+        val lengthSixInputs: MutableList<String> = mutableListOf() // 0, 6, or 9
         for (i in inputSignals.indices) {
             when (inputSignals[i].length) {
-                2 -> oneIndex = i
-                3 -> sevenIndex = i
-                4 -> fourIndex = i
-                7 -> eightIndex = i
+                2 -> knownValues[1] = sortString(inputSignals[i])
+                3 -> knownValues[7] = sortString(inputSignals[i])
+                4 -> knownValues[4] = sortString(inputSignals[i])
+                5 -> lengthFiveInputs.add(sortString(inputSignals[i]))
+                6 -> lengthSixInputs.add(sortString(inputSignals[i]))
+                7 -> knownValues[8] = sortString(inputSignals[i])
             }
         }
 
-        // Map signal of top value
-        inputSignals[sevenIndex].toCharArray().forEach {
-            if (!inputSignals[oneIndex].toCharArray().contains(it)) {
-                trackedValues[0] = it
+        // Find 3
+        for (i in lengthFiveInputs) {
+            var iChars = i.toCharArray()
+            if (iChars.contains(knownValues[1].toCharArray()[0]) &&
+                iChars.contains(knownValues[1].toCharArray()[1])) {
+                knownValues[3] = sortString(i)
             }
         }
+        lengthFiveInputs.removeIf { it == knownValues[3] }
 
-        println(inputSignals[oneIndex].toCharArray())
-        println(inputSignals[sevenIndex].toCharArray())
-        println("Top value: ${trackedValues[0]}")
+        // Find 6
+        for (i in lengthSixInputs) {
+            var iChars = i.toCharArray()
+            if (!(iChars.contains(knownValues[1].toCharArray()[0]) &&
+                  iChars.contains(knownValues[1].toCharArray()[1]))) {
+                knownValues[6] = sortString(i)
+            }
+        }
+        lengthSixInputs.removeIf { it == knownValues[6] }
 
-        // trackedValues[0] = inputSignals[oneIndex].toCharArray()
+        // Find 9
+        for (i in lengthSixInputs) {
+            var iChars = i.toCharArray()
+            if (iChars.contains(knownValues[4].toCharArray()[0]) &&
+                iChars.contains(knownValues[4].toCharArray()[1]) &&
+                iChars.contains(knownValues[4].toCharArray()[2]) &&
+                iChars.contains(knownValues[4].toCharArray()[3])) {
+                knownValues[9] = sortString(i)
+            }
+        }
+        lengthSixInputs.removeIf { it == knownValues[9] }
 
-        return outputValues
+        println("lengthFiveInputs: $lengthFiveInputs")
+        println("lengthSixInputs: $lengthSixInputs")
+
+        // Find 0
+        knownValues[0] = sortString(lengthSixInputs[0])
+
+        // Find 2
+        knownValues[2] = sortString(lengthFiveInputs[0]) //TODO: Might need to swap with 5
+
+        // Find 5
+        knownValues[5] = sortString(lengthFiveInputs[1]) //TODO: Might need to swap with 2
+
+        return knownValues
     }
 
     private fun concatenateToInt(input: List<String>): Int {
@@ -93,6 +139,6 @@ class Day08 {
     }
 
     private fun sortString(input: String): String {
-        return input.toCharArray().sorted().joinToString { "" }
+        return input.toCharArray().sorted().joinToString("")
     }
 }
