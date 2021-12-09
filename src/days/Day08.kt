@@ -43,11 +43,6 @@ class Day08 {
 
             counter += concatenateToInt(tempNumberList)
 
-            println("mapping: ${signalMappingList[i]}")
-            println("sortedVals: $sortedVals")
-            println("tempNumberList: $tempNumberList -> ${concatenateToInt(tempNumberList)}")
-            println("counter: $counter")
-
             tempNumberList.clear()
             sortedVals.clear()
         }
@@ -115,17 +110,27 @@ class Day08 {
         }
         lengthSixInputs.removeIf { it == knownValues[9] }
 
-        println("lengthFiveInputs: $lengthFiveInputs")
-        println("lengthSixInputs: $lengthSixInputs")
-
         // Find 0
         knownValues[0] = sortString(lengthSixInputs[0])
 
-        // Find 2
-        knownValues[2] = sortString(lengthFiveInputs[0]) //TODO: Might need to swap with 5
+        // Find 2 (exactly 2 chars from 4 will match)
+        for (i in lengthFiveInputs) {
+            var iChars = i.toCharArray()
+            var matchCounter = 0
+            for (j in knownValues[4].toCharArray()) {
+                if (iChars.contains(j)) {
+                    matchCounter++
+                }
+            }
+            if (matchCounter == 2) {
+                knownValues[2] = sortString(i)
+                break
+            }
+        }
+        lengthFiveInputs.removeIf { it == knownValues[2] }
 
-        // Find 5
-        knownValues[5] = sortString(lengthFiveInputs[1]) //TODO: Might need to swap with 2
+        // Find 5 (last value possible)
+        knownValues[5] = sortString(lengthFiveInputs[0])
 
         return knownValues
     }
