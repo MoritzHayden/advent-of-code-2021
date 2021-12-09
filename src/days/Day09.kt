@@ -21,6 +21,9 @@ class Day09 {
         val input = readFile("Day09")
         val caveHeights = getCaveHeights(input)
         val lowPointCoordinates = getLowPointsCoordinates(caveHeights)
+        for (coordinate in lowPointCoordinates) {
+            // Get basin
+        }
 
         return 0
     }
