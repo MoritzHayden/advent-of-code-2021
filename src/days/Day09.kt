@@ -1,5 +1,7 @@
 package days
 
+import readFile
+
 class Day09 {
     fun solveAll() {
         println("Solving day 9...")
@@ -8,10 +10,180 @@ class Day09 {
     }
 
     private fun solvePart1(): Int {
-        return 0
+        val input = readFile("Day09")
+        val caveHeights = getCaveHeights(input)
+        val lowPoints = getLowPoints(caveHeights)
+
+        return lowPoints.sum() + lowPoints.count()
     }
 
     private fun solvePart2(): Int {
+        val input = readFile("Day09")
+        val caveHeights = getCaveHeights(input)
+        val lowPointCoordinates = getLowPointsCoordinates(caveHeights)
+
+        println(lowPointCoordinates)
         return 0
+    }
+
+    private fun getCaveHeights(input: List<String>): MutableList<MutableList<Int>> {
+        val caveHeights = mutableListOf(mutableListOf<Int>())
+        for (i in input) {
+            caveHeights.add(i.split("").subList(1, i.length + 1).map { it.toInt() }.toMutableList())
+        }
+        caveHeights.removeAt(0)
+
+        return caveHeights
+    }
+
+    private fun getLowPoints(caveHeights: MutableList<MutableList<Int>>): MutableList<Int> {
+        val lowPoints = mutableListOf<Int>()
+
+        for (y in caveHeights.indices) {
+            for (x in caveHeights[y].indices) {
+                val currentNode = caveHeights[y][x]
+
+                if (x == 0 && y == 0) {
+                    // This is the top left corner node
+                    if (currentNode < caveHeights[y + 1][x] &&
+                        currentNode < caveHeights[y][x + 1]) {
+                        lowPoints.add(currentNode)
+                    }
+                } else if (x == caveHeights[y].lastIndex && y == 0) {
+                    // This is the top right corner node
+                    if (currentNode < caveHeights[y][x - 1] &&
+                        currentNode < caveHeights[y + 1][x]) {
+                        lowPoints.add(currentNode)
+                    }
+                } else if (x == 0 && y == caveHeights.lastIndex) {
+                    // This is the bottom left corner node
+                    if (currentNode < caveHeights[y - 1][x] &&
+                        currentNode < caveHeights[y][x + 1]) {
+                        lowPoints.add(currentNode)
+                    }
+                } else if (x == caveHeights[y].lastIndex && y == caveHeights.lastIndex) {
+                    // This is the bottom right corner node
+                    if (currentNode < caveHeights[y - 1][x] &&
+                        currentNode < caveHeights[y][x - 1]) {
+                        lowPoints.add(currentNode)
+                    }
+                } else if (x == 0) {
+                    // This is an edge node on the left (not corner)
+                    if (currentNode < caveHeights[y - 1][x] &&
+                        currentNode < caveHeights[y + 1][x] &&
+                        currentNode < caveHeights[y][x + 1]) {
+                        lowPoints.add(currentNode)
+                    }
+
+                } else if (x == caveHeights[y].lastIndex) {
+                    // This is an edge node on the right (not corner)
+                    if (currentNode < caveHeights[y - 1][x] &&
+                        currentNode < caveHeights[y][x - 1] &&
+                        currentNode < caveHeights[y + 1][x]) {
+                        lowPoints.add(currentNode)
+                    }
+                } else if (y == 0) {
+                    // This is an edge node on the top (not corner)
+                    if (currentNode < caveHeights[y][x - 1] &&
+                        currentNode < caveHeights[y + 1][x] &&
+                        currentNode < caveHeights[y][x + 1]) {
+                        lowPoints.add(currentNode)
+                    }
+                } else if (y == caveHeights.lastIndex) {
+                    // This is an edge node on the bottom (not corner)
+                    if (currentNode < caveHeights[y - 1][x] &&
+                        currentNode < caveHeights[y][x - 1] &&
+                        currentNode < caveHeights[y][x + 1]) {
+                        lowPoints.add(currentNode)
+                    }
+                } else {
+                    // This is a normal node
+                    if (currentNode < caveHeights[y - 1][x] &&
+                        currentNode < caveHeights[y][x - 1] &&
+                        currentNode < caveHeights[y + 1][x] &&
+                        currentNode < caveHeights[y][x + 1]) {
+                        lowPoints.add(currentNode)
+                    }
+                }
+            }
+        }
+
+        return lowPoints
+    }
+
+    private fun getLowPointsCoordinates(caveHeights: MutableList<MutableList<Int>>): MutableList<Pair<Int, Int>> {
+        val lowPointsCoordinates = mutableListOf<Pair<Int, Int>>()
+
+        for (y in caveHeights.indices) {
+            for (x in caveHeights[y].indices) {
+                val currentNode = caveHeights[y][x]
+                val currentCoordinate = Pair(x, y)
+
+                if (x == 0 && y == 0) {
+                    // This is the top left corner node
+                    if (currentNode < caveHeights[y + 1][x] &&
+                        currentNode < caveHeights[y][x + 1]) {
+                        lowPointsCoordinates.add(currentCoordinate)
+                    }
+                } else if (x == caveHeights[y].lastIndex && y == 0) {
+                    // This is the top right corner node
+                    if (currentNode < caveHeights[y][x - 1] &&
+                        currentNode < caveHeights[y + 1][x]) {
+                        lowPointsCoordinates.add(currentCoordinate)
+                    }
+                } else if (x == 0 && y == caveHeights.lastIndex) {
+                    // This is the bottom left corner node
+                    if (currentNode < caveHeights[y - 1][x] &&
+                        currentNode < caveHeights[y][x + 1]) {
+                        lowPointsCoordinates.add(currentCoordinate)
+                    }
+                } else if (x == caveHeights[y].lastIndex && y == caveHeights.lastIndex) {
+                    // This is the bottom right corner node
+                    if (currentNode < caveHeights[y - 1][x] &&
+                        currentNode < caveHeights[y][x - 1]) {
+                        lowPointsCoordinates.add(currentCoordinate)
+                    }
+                } else if (x == 0) {
+                    // This is an edge node on the left (not corner)
+                    if (currentNode < caveHeights[y - 1][x] &&
+                        currentNode < caveHeights[y + 1][x] &&
+                        currentNode < caveHeights[y][x + 1]) {
+                        lowPointsCoordinates.add(currentCoordinate)
+                    }
+
+                } else if (x == caveHeights[y].lastIndex) {
+                    // This is an edge node on the right (not corner)
+                    if (currentNode < caveHeights[y - 1][x] &&
+                        currentNode < caveHeights[y][x - 1] &&
+                        currentNode < caveHeights[y + 1][x]) {
+                        lowPointsCoordinates.add(currentCoordinate)
+                    }
+                } else if (y == 0) {
+                    // This is an edge node on the top (not corner)
+                    if (currentNode < caveHeights[y][x - 1] &&
+                        currentNode < caveHeights[y + 1][x] &&
+                        currentNode < caveHeights[y][x + 1]) {
+                        lowPointsCoordinates.add(currentCoordinate)
+                    }
+                } else if (y == caveHeights.lastIndex) {
+                    // This is an edge node on the bottom (not corner)
+                    if (currentNode < caveHeights[y - 1][x] &&
+                        currentNode < caveHeights[y][x - 1] &&
+                        currentNode < caveHeights[y][x + 1]) {
+                        lowPointsCoordinates.add(currentCoordinate)
+                    }
+                } else {
+                    // This is a normal node
+                    if (currentNode < caveHeights[y - 1][x] &&
+                        currentNode < caveHeights[y][x - 1] &&
+                        currentNode < caveHeights[y + 1][x] &&
+                        currentNode < caveHeights[y][x + 1]) {
+                        lowPointsCoordinates.add(currentCoordinate)
+                    }
+                }
+            }
+        }
+
+        return lowPointsCoordinates
     }
 }
