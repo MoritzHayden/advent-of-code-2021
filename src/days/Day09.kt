@@ -22,7 +22,6 @@ class Day09 {
         val caveHeights = getCaveHeights(input)
         val lowPointCoordinates = getLowPointsCoordinates(caveHeights)
 
-        println(lowPointCoordinates)
         return 0
     }
 
@@ -34,6 +33,46 @@ class Day09 {
         caveHeights.removeAt(0)
 
         return caveHeights
+    }
+
+    private fun getBasin(basinOrigin: Pair<Int, Int>): MutableList<Pair<Int, Int>> {
+        val basinMembers = mutableListOf<Pair<Int, Int>>()
+        return basinMembers
+    }
+
+    private fun getValidAdjacentMembers(caveHeights: MutableList<MutableList<Int>>, point: Pair<Int, Int>): MutableList<Pair<Int, Int>> {
+        // Might build recursion around this
+        val basinMembers = mutableListOf<Pair<Int, Int>>()
+
+        if (point.first > 0) {
+            if (caveHeights[point.second][point.first - 1] != 9) {
+                // Get the left member if valid
+                basinMembers.add(Pair(point.first - 1, point.second))
+            }
+        }
+
+        if (point.first < caveHeights[0].size - 1) {
+            if (caveHeights[point.second][point.first + 1] != 9) {
+                // Get the right member if valid
+                basinMembers.add(Pair(point.first + 1, point.second))
+            }
+        }
+
+        if (point.second > 0) {
+            if (caveHeights[point.second - 1][point.first] != 9) {
+                // Get the top member if valid
+                basinMembers.add(Pair(point.first, point.second - 1))
+            }
+        }
+
+        if (point.second < caveHeights.size - 1) {
+            if (caveHeights[point.second + 1][point.first] != 9) {
+                // Get the bottom member if valid
+                basinMembers.add(Pair(point.first, point.second + 1))
+            }
+        }
+
+        return basinMembers
     }
 
     private fun getLowPoints(caveHeights: MutableList<MutableList<Int>>): MutableList<Int> {
