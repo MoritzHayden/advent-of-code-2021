@@ -21,29 +21,51 @@ class Day09 {
         val input = readFile("Day09")
         val caveHeights = getCaveHeights(input)
         val lowPointCoordinates = getLowPointsCoordinates(caveHeights)
-        for (coordinate in lowPointCoordinates) {
+        val basins: MutableList<MutableList<Pair<Int, Int>>> = mutableListOf()
+        for (point in lowPointCoordinates.indices) {
             // Get basin
+            val currentBasin: MutableList<Pair<Int, Int>> = mutableListOf()
+            currentBasin.add(lowPointCoordinates[point])
+            var basinComplete = false
+
+            for (i in 0..7) {
+                val iterator = currentBasin.listIterator()
+                while (iterator.hasNext() && !basinComplete) {
+                    val point = iterator.next()
+                    val adjacentMembers = getValidAdjacentMembers(caveHeights, point)
+                    if (adjacentMembers.size == 0 && !iterator.hasNext()) {
+                        basinComplete = true
+                    } else {
+                        for (point in adjacentMembers) {
+                            if (!currentBasin.contains(point)) {
+                                iterator.add(point)
+                            }
+                        }
+                    }
+                }
+            }
+
+            basins.add(currentBasin)
         }
 
-        return 0
+        basins.sortBy { it.size }
+        basins.reverse()
+
+        return basins[0].size * basins[1].size * basins[2].size
     }
 
-    private fun getCaveHeights(input: List<String>): MutableList<MutableList<Int>> {
-        val caveHeights = mutableListOf(mutableListOf<Int>())
-        for (i in input) {
-            caveHeights.add(i.split("").subList(1, i.length + 1).map { it.toInt() }.toMutableList())
-        }
-        caveHeights.removeAt(0)
-
-        return caveHeights
-    }
-
-    private fun getBasin(basinOrigin: Pair<Int, Int>): MutableList<Pair<Int, Int>> {
+    private fun getBasin(
+        caveHeights: MutableList<MutableList<Int>>,
+        basinOrigin: Pair<Int, Int>
+    ): MutableList<Pair<Int, Int>> {
         val basinMembers = mutableListOf<Pair<Int, Int>>()
         return basinMembers
     }
 
-    private fun getValidAdjacentMembers(caveHeights: MutableList<MutableList<Int>>, point: Pair<Int, Int>): MutableList<Pair<Int, Int>> {
+    private fun getValidAdjacentMembers(
+        caveHeights: MutableList<MutableList<Int>>,
+        point: Pair<Int, Int>
+    ): MutableList<Pair<Int, Int>> {
         // Might build recursion around this
         val basinMembers = mutableListOf<Pair<Int, Int>>()
 
@@ -88,32 +110,37 @@ class Day09 {
                 if (x == 0 && y == 0) {
                     // This is the top left corner node
                     if (currentNode < caveHeights[y + 1][x] &&
-                        currentNode < caveHeights[y][x + 1]) {
+                        currentNode < caveHeights[y][x + 1]
+                    ) {
                         lowPoints.add(currentNode)
                     }
                 } else if (x == caveHeights[y].lastIndex && y == 0) {
                     // This is the top right corner node
                     if (currentNode < caveHeights[y][x - 1] &&
-                        currentNode < caveHeights[y + 1][x]) {
+                        currentNode < caveHeights[y + 1][x]
+                    ) {
                         lowPoints.add(currentNode)
                     }
                 } else if (x == 0 && y == caveHeights.lastIndex) {
                     // This is the bottom left corner node
                     if (currentNode < caveHeights[y - 1][x] &&
-                        currentNode < caveHeights[y][x + 1]) {
+                        currentNode < caveHeights[y][x + 1]
+                    ) {
                         lowPoints.add(currentNode)
                     }
                 } else if (x == caveHeights[y].lastIndex && y == caveHeights.lastIndex) {
                     // This is the bottom right corner node
                     if (currentNode < caveHeights[y - 1][x] &&
-                        currentNode < caveHeights[y][x - 1]) {
+                        currentNode < caveHeights[y][x - 1]
+                    ) {
                         lowPoints.add(currentNode)
                     }
                 } else if (x == 0) {
                     // This is an edge node on the left (not corner)
                     if (currentNode < caveHeights[y - 1][x] &&
                         currentNode < caveHeights[y + 1][x] &&
-                        currentNode < caveHeights[y][x + 1]) {
+                        currentNode < caveHeights[y][x + 1]
+                    ) {
                         lowPoints.add(currentNode)
                     }
 
@@ -121,21 +148,24 @@ class Day09 {
                     // This is an edge node on the right (not corner)
                     if (currentNode < caveHeights[y - 1][x] &&
                         currentNode < caveHeights[y][x - 1] &&
-                        currentNode < caveHeights[y + 1][x]) {
+                        currentNode < caveHeights[y + 1][x]
+                    ) {
                         lowPoints.add(currentNode)
                     }
                 } else if (y == 0) {
                     // This is an edge node on the top (not corner)
                     if (currentNode < caveHeights[y][x - 1] &&
                         currentNode < caveHeights[y + 1][x] &&
-                        currentNode < caveHeights[y][x + 1]) {
+                        currentNode < caveHeights[y][x + 1]
+                    ) {
                         lowPoints.add(currentNode)
                     }
                 } else if (y == caveHeights.lastIndex) {
                     // This is an edge node on the bottom (not corner)
                     if (currentNode < caveHeights[y - 1][x] &&
                         currentNode < caveHeights[y][x - 1] &&
-                        currentNode < caveHeights[y][x + 1]) {
+                        currentNode < caveHeights[y][x + 1]
+                    ) {
                         lowPoints.add(currentNode)
                     }
                 } else {
@@ -143,7 +173,8 @@ class Day09 {
                     if (currentNode < caveHeights[y - 1][x] &&
                         currentNode < caveHeights[y][x - 1] &&
                         currentNode < caveHeights[y + 1][x] &&
-                        currentNode < caveHeights[y][x + 1]) {
+                        currentNode < caveHeights[y][x + 1]
+                    ) {
                         lowPoints.add(currentNode)
                     }
                 }
@@ -164,32 +195,37 @@ class Day09 {
                 if (x == 0 && y == 0) {
                     // This is the top left corner node
                     if (currentNode < caveHeights[y + 1][x] &&
-                        currentNode < caveHeights[y][x + 1]) {
+                        currentNode < caveHeights[y][x + 1]
+                    ) {
                         lowPointsCoordinates.add(currentCoordinate)
                     }
                 } else if (x == caveHeights[y].lastIndex && y == 0) {
                     // This is the top right corner node
                     if (currentNode < caveHeights[y][x - 1] &&
-                        currentNode < caveHeights[y + 1][x]) {
+                        currentNode < caveHeights[y + 1][x]
+                    ) {
                         lowPointsCoordinates.add(currentCoordinate)
                     }
                 } else if (x == 0 && y == caveHeights.lastIndex) {
                     // This is the bottom left corner node
                     if (currentNode < caveHeights[y - 1][x] &&
-                        currentNode < caveHeights[y][x + 1]) {
+                        currentNode < caveHeights[y][x + 1]
+                    ) {
                         lowPointsCoordinates.add(currentCoordinate)
                     }
                 } else if (x == caveHeights[y].lastIndex && y == caveHeights.lastIndex) {
                     // This is the bottom right corner node
                     if (currentNode < caveHeights[y - 1][x] &&
-                        currentNode < caveHeights[y][x - 1]) {
+                        currentNode < caveHeights[y][x - 1]
+                    ) {
                         lowPointsCoordinates.add(currentCoordinate)
                     }
                 } else if (x == 0) {
                     // This is an edge node on the left (not corner)
                     if (currentNode < caveHeights[y - 1][x] &&
                         currentNode < caveHeights[y + 1][x] &&
-                        currentNode < caveHeights[y][x + 1]) {
+                        currentNode < caveHeights[y][x + 1]
+                    ) {
                         lowPointsCoordinates.add(currentCoordinate)
                     }
 
@@ -197,21 +233,24 @@ class Day09 {
                     // This is an edge node on the right (not corner)
                     if (currentNode < caveHeights[y - 1][x] &&
                         currentNode < caveHeights[y][x - 1] &&
-                        currentNode < caveHeights[y + 1][x]) {
+                        currentNode < caveHeights[y + 1][x]
+                    ) {
                         lowPointsCoordinates.add(currentCoordinate)
                     }
                 } else if (y == 0) {
                     // This is an edge node on the top (not corner)
                     if (currentNode < caveHeights[y][x - 1] &&
                         currentNode < caveHeights[y + 1][x] &&
-                        currentNode < caveHeights[y][x + 1]) {
+                        currentNode < caveHeights[y][x + 1]
+                    ) {
                         lowPointsCoordinates.add(currentCoordinate)
                     }
                 } else if (y == caveHeights.lastIndex) {
                     // This is an edge node on the bottom (not corner)
                     if (currentNode < caveHeights[y - 1][x] &&
                         currentNode < caveHeights[y][x - 1] &&
-                        currentNode < caveHeights[y][x + 1]) {
+                        currentNode < caveHeights[y][x + 1]
+                    ) {
                         lowPointsCoordinates.add(currentCoordinate)
                     }
                 } else {
@@ -219,7 +258,8 @@ class Day09 {
                     if (currentNode < caveHeights[y - 1][x] &&
                         currentNode < caveHeights[y][x - 1] &&
                         currentNode < caveHeights[y + 1][x] &&
-                        currentNode < caveHeights[y][x + 1]) {
+                        currentNode < caveHeights[y][x + 1]
+                    ) {
                         lowPointsCoordinates.add(currentCoordinate)
                     }
                 }
@@ -227,5 +267,15 @@ class Day09 {
         }
 
         return lowPointsCoordinates
+    }
+
+    private fun getCaveHeights(input: List<String>): MutableList<MutableList<Int>> {
+        val caveHeights = mutableListOf(mutableListOf<Int>())
+        for (i in input) {
+            caveHeights.add(i.split("").subList(1, i.length + 1).map { it.toInt() }.toMutableList())
+        }
+        caveHeights.removeAt(0)
+
+        return caveHeights
     }
 }
