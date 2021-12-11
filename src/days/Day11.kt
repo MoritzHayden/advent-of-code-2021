@@ -28,7 +28,32 @@ class Day11 {
     }
 
     private fun solvePart2(): Int {
-        return 0
+        val input = readFile("day11")
+        val squidGrid = getSquidGrid(input)
+        var simultaneousFlash = false
+        var stepsTaken = 0
+
+        while (!simultaneousFlash) {
+            stepsTaken++
+            stepFirst(squidGrid)
+            val pointsFlashed = stepSecond(squidGrid)
+            stepThird(squidGrid, pointsFlashed)
+            simultaneousFlash = isSimultaneousFlash(squidGrid)
+        }
+
+        return stepsTaken
+    }
+
+    private fun isSimultaneousFlash(squidGrid: MutableList<MutableList<Int>>): Boolean {
+        for (i in 1 until squidGrid.size - 1) {
+            for (j in 1 until squidGrid[i].size - 1) {
+                if (squidGrid[i][j] != squidGrid[1][1]) {
+                    return false
+                }
+            }
+        }
+
+        return true
     }
 
     private fun stepFirst(squidGrid: MutableList<MutableList<Int>>) {
