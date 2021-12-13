@@ -15,8 +15,8 @@ class Day12 {
         val edges = getEdges(input)
         val visitedNodes = mutableListOf<String>("START")
         val result = mutableListOf<MutableList<String>>()
-        findAllPaths(mutableListOf("START"), "END", edges, visitedNodes, result)
 
+        findAllPaths(mutableListOf("START"), "END", edges, visitedNodes, result)
         result.removeIf { !it.contains("END") }
 
         return result.size
@@ -27,8 +27,10 @@ class Day12 {
         val edges = getEdges(input)
         val visitedNodes = mutableListOf<String>("START")
         val result = mutableListOf<MutableList<String>>()
-        findAllPathsSecond(mutableListOf("START"), "END", edges, visitedNodes, result)
 
+        // TODO: Each small cave can be visited twice
+        val smallCaves = getSmallCaves(edges)
+        findAllPathsSecond(mutableListOf("START"), "END", edges, visitedNodes, result)
         result.removeIf { !it.contains("END") }
 
         return result.size
@@ -119,5 +121,16 @@ class Day12 {
         if (node != "START") nextNodes.remove("START")
 
         return nextNodes
+    }
+
+    private fun getSmallCaves(edges: List<Pair<String, String>>): List<String> {
+        val smallCaves = mutableListOf<String>()
+
+        edges.forEach {
+            if (!smallCaves.contains(it.first) && it.first[0].isLowerCase()) smallCaves.add(it.first)
+            if (!smallCaves.contains(it.second) && it.second[0].isLowerCase()) smallCaves.add(it.second)
+        }
+
+        return smallCaves
     }
 }
