@@ -17,13 +17,21 @@ class Day12 {
         val result = mutableListOf<MutableList<String>>()
         findAllPaths(mutableListOf("START"), "END", edges, visitedNodes, result)
 
-        result.removeIf{ !it.contains("END") }
+        result.removeIf { !it.contains("END") }
 
         return result.size
     }
 
     private fun solvePart2(): Int {
-        return 0
+        val input = readFile("day12")
+        val edges = getEdges(input)
+        val visitedNodes = mutableListOf<String>("START")
+        val result = mutableListOf<MutableList<String>>()
+        findAllPathsSecond(mutableListOf("START"), "END", edges, visitedNodes, result)
+
+        result.removeIf { !it.contains("END") }
+
+        return result.size
     }
 
     private fun findAllPaths(
@@ -47,7 +55,35 @@ class Day12 {
             val tempPath = findAllPaths(newPath, endNode, edges, visitedNodes, result)
             if (tempPath.isNotEmpty()) allPaths.add(tempPath[0])
             visitedNodes.remove(node)
-}
+        }
+
+        return allPaths
+    }
+
+    private fun findAllPathsSecond(
+        currentPath: MutableList<String>,
+        endNode: String,
+        edges: List<Pair<String, String>>,
+        visitedNodes: MutableList<String>,
+        result: MutableList<MutableList<String>>,
+    ): List<List<String>> {
+        val allPaths = mutableListOf<List<String>>()
+        val nodesFromHere = getNextNodesFromNode(currentPath.last(), edges)
+        nodesFromHere.removeIf { visitedNodes.contains(it) }
+        allPaths.add(currentPath)
+        result.add(currentPath)
+
+        for (i in nodesFromHere.indices) {
+            val newPath = currentPath.toMutableList()
+            newPath.add(nodesFromHere[i])
+            if (nodesFromHere[i][0].isLowerCase()) {
+                visitedNodes.add(nodesFromHere[i])
+            }
+
+            val tempPath = findAllPathsSecond(newPath, endNode, edges, visitedNodes, result)
+            if (tempPath.isNotEmpty()) allPaths.add(tempPath[0])
+            visitedNodes.remove(nodesFromHere[i])
+        }
 
         return allPaths
     }
