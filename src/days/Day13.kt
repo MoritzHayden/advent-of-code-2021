@@ -12,12 +12,10 @@ class Day13 {
     private fun solvePart1(): Int {
         val input = readFile("day13")
         val allPoints = getPoints(input)
-        val allFolds = getFolds(input).take(1) // Only one fold is needed for this part
+        val allFolds = getFolds(input)//.take(1) // Only one fold is needed for this part
         val sheet = getSheet(allPoints)
         val foldedSheet = foldSheet(sheet, allFolds)
         var totalDots = 0
-
-        allFolds.forEach(::println)
 
         foldedSheet.forEach { sheetRow ->
             sheetRow.forEach {
@@ -25,6 +23,7 @@ class Day13 {
             }
         }
 
+        //852 too high
         return totalDots
     }
 
@@ -32,22 +31,65 @@ class Day13 {
         return 0
     }
 
-    private fun foldSheet(sheet: MutableList<MutableList<Int>>, folds: List<Pair<Char, Int>>): MutableList<MutableList<Int>> {
-        val newSheet = MutableList(sheet.size) { MutableList(sheet[0].size) { 0 } }
+    private fun foldSheet(
+        sheet: MutableList<MutableList<Int>>,
+        folds: List<Pair<Char, Int>>
+    ): MutableList<MutableList<Int>> {
+        var newSheet = sheet.toMutableList()
 
         for (fold in folds) {
             val position = fold.second
             when (fold.first) {
                 'x' -> {
                     // Fold on the x-axis
+                    val left = mutableListOf<MutableList<Int>>()
+                    val right = mutableListOf<MutableList<Int>>()
+
+                    for (i in newSheet.indices) {
+                        val leftRow = mutableListOf<Int>()
+                        val rightRow = mutableListOf<Int>()
+
+                        for (j in newSheet[i].indices) {
+                            if (j < position) {
+                                leftRow.add(newSheet[i][j])
+                            }
+                            if (j > position) {
+                                rightRow.add(newSheet[i][j])
+                            }
+                        }
+
+                        left.add(leftRow)
+                        right.add(rightRow)
+                    }
+
+                    newSheet.clear()
+
+                    for (i in left.indices) {
+                        val tempRow = mutableListOf<Int>()
+                        var rightIndex = right[i].size - 1
+
+                        for (j in left[i].indices) {
+                            if (left[i][j] == 1 || right[i][rightIndex] == 1) {
+                                tempRow.add(1)
+                            } else {
+                                tempRow.add(0)
+                            }
+
+                            if (rightIndex > 0) {
+                                rightIndex--
+                            }
+                        }
+
+                        newSheet.add(tempRow)
+                    }
                 }
                 'y' -> {
                     // Fold on the y-axis
                     val top = mutableListOf<MutableList<Int>>()
                     val bottom = mutableListOf<MutableList<Int>>()
 
-                    for (i in sheet.indices) {
-                        val row = sheet[i]
+                    for (i in newSheet.indices) {
+                        val row = newSheet[i]
                         if (i < position) {
                             top.add(row)
                         }
@@ -56,10 +98,23 @@ class Day13 {
                         }
                     }
 
-                    top.forEach(::println)
-                    println()
-                    bottom.forEach(::println)
+                    newSheet.clear()
 
+                    var bottomSize = bottom.size
+                    for (i in top.indices) {
+                        val tempRow = mutableListOf<Int>()
+                        val topRow = top[i]
+                        val bottomRow = bottom[bottomSize - i - 1]
+
+                        for (j in topRow.indices) {
+                            if (topRow[j] == 1 || bottomRow[j] == 1) {
+                                tempRow.add(1)
+                            } else {
+                                tempRow.add(0)
+                            }
+                        }
+                        newSheet.add(tempRow)
+                    }
                 }
             }
         }
@@ -99,7 +154,7 @@ class Day13 {
 
         input.forEach {
             try {
-                val(x, y) = it.split(",")
+                val (x, y) = it.split(",")
                 allPoints.add(Pair(x.toInt(), y.toInt()))
             } catch (e: Exception) {
                 // Ignore: we are only interested in the points
